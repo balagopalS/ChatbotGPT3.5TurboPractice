@@ -1,7 +1,13 @@
-//this is packaged with vite so keep that in mind while cloning
+// This is packaged with Vite, so keep that in mind while cloning
+
+// Importing useState hook from the React library
 import { useState } from "react";
+
+// Importing CSS files
 import "./App.css";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+
+// Importing components from the Chat UI Kit library
 import {
   MainContainer,
   ChatContainer,
@@ -13,11 +19,16 @@ import {
   ConversationHeader,
 } from "@chatscope/chat-ui-kit-react";
 
+// API key for OpenAI
 const API_KEY = "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";
+
+// URL for the avatar icon
 const avatarIco =
   "https://chatscope.io/storybook/react/static/media/zoe.e31a4ff8.svg";
 
+// Main component
 function App() {
+  // State variables
   const [typing, setTyping] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -26,43 +37,55 @@ function App() {
     },
   ]);
 
+  // Function to handle sending a message
   const handleSend = async (message) => {
+    // Creating a new message object
     const newMessage = {
       message: message,
       sender: "user",
       direction: "outgoing",
     };
 
+    // Updating the messages state with the new message
     const newMessages = [...messages, newMessage];
     setMessages(newMessages);
 
+    // Set typing state to true
     setTyping(true);
-    //calling with newmessages instead of messages becasue react would'nt have updated the states yet
-    await processMessageTogpt3(newMessages);
+
+    // Calling the function to process the message using GPT-3.5 Turbo
+    // Using newMessages instead of messages because React wouldn't have updated the state yet
+    await processMessageToGpt3(newMessages);
   };
 
-  async function processMessageTogpt3(chatMessages) {
+  // Function to process messages using GPT-3.5 Turbo
+  async function processMessageToGpt3(chatMessages) {
+    // Transforming the chat messages into a format suitable for the OpenAI API
     let apiMessages = chatMessages.map((messageObject) => {
       let role = "";
       if (messageObject.sender === "GPT3.5Turbo") {
         role = "assistant";
-      } else role = "user";
+      } else {
+        role = "user";
+      }
       console.log("Your Message : ", messageObject.message);
       return { role: role, content: messageObject.message };
     });
 
-    //sytemmessage config edit this for context change
+    // System message configuration, can be edited for different contexts
     const systemMessage = {
       role: "system",
       content:
-        "I will call you Ryuko, You are a personal assistant named Ryuko, help out with whatever query you are given",
+        "I will call you Ryuko. You are a personal assistant named Ryuko, here to help with any queries you have.",
     };
 
+    // Building the request body for the OpenAI API
     const apiRequestBody = {
       model: "gpt-3.5-turbo",
       messages: [...apiMessages],
     };
 
+    // Sending a POST request to the OpenAI API
     await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -75,8 +98,10 @@ function App() {
         return data.json();
       })
       .then((data) => {
-        // console.log(data);
-        console.log("Reply from Ruko: ", data.choices[0].message.content);
+        // Logging the response from the GPT-3.5 Turbo model
+        console.log("Reply from Ryuko: ", data.choices[0].message.content);
+
+        // Updating the messages state with the response from the model
         setMessages([
           ...chatMessages,
           {
@@ -84,15 +109,18 @@ function App() {
             sender: "GPT3.5Turbo",
           },
         ]);
+
+        // Set typing state to false
         setTyping(false);
       });
   }
 
+  // Rendering the UI components
   return (
     <div className="App">
       <div
         style={{
-          postion: "relative",
+          position: "relative",
           height: "900px",
           width: "1080px",
           borderRadius: "30px",
