@@ -19,7 +19,7 @@ import {
   ConversationHeader,
 } from "@chatscope/chat-ui-kit-react";
 
-// API key for OpenAI
+// API key for OpenAI, replace with yours
 const API_KEY = "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";
 
 // URL for the avatar icon
@@ -32,7 +32,7 @@ function App() {
   const [typing, setTyping] = useState(false);
   const [messages, setMessages] = useState([
     {
-      message: "Hellooo!!!",
+      message: "Hellooo!!! ask me anything",
       sender: "GPT3.5Turbo",
     },
   ]);
@@ -76,7 +76,7 @@ function App() {
     const systemMessage = {
       role: "system",
       content:
-        "I will call you Ryuko. You are a personal assistant named Ryuko, here to help with any queries you have.",
+        "You are a personal assistant, you can answer any question or queries",
     };
 
     // Building the request body for the OpenAI API
@@ -99,7 +99,7 @@ function App() {
       })
       .then((data) => {
         // Logging the response from the GPT-3.5 Turbo model
-        console.log("Reply from Ryuko: ", data.choices[0].message.content);
+        console.log("Reply from gpt3: ", data.choices[0].message.content);
 
         // Updating the messages state with the response from the model
         setMessages([
@@ -132,14 +132,14 @@ function App() {
           <ChatContainer>
             <ConversationHeader>
               <ConversationHeader.Content
-                userName="Ryuko / ChatGPT3.5Turbo"
-                info="Ask her anything..."
+                userName="ChatGPT3.5Turbo"
+                info="Ask anything..."
               />
             </ConversationHeader>
             <MessageList
               scrollBehavior="smooth"
               typingIndicator={
-                typing ? <TypingIndicator content="Ryuko is typing..." /> : null
+                typing ? <TypingIndicator content="gpt3 is typing..." /> : null
               }
             >
               {messages.map((message, i) => {
